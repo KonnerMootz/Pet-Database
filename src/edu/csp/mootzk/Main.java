@@ -3,7 +3,7 @@
 // Class: CSC 422 Software Engineering
 // Professor: Gregory Silver
 // Date: 10/29/2020
-// Version: 1.0
+// Version: 2.0
 
 package edu.csp.mootzk;
 
@@ -22,6 +22,7 @@ public class Main {
         System.out.println("Pet Database Program\n");
 
         int userSelection = 0;
+        int rowCount;
 
         while(true) {
             displayMenuOptions();
@@ -34,69 +35,110 @@ public class Main {
                 System.exit(1);
             }
 
-            switch(userSelection) {
-                case 1:
+            switch (userSelection) {
+                case 1 -> {
                     // View all pets here
-                    System.out.println("+----------------------+\n" +
+                    System.out.println("\n+----------------------+\n" +
                             "| ID | NAME      | AGE |\n" +
                             "+----------------------+");
-
-                    int rowCount = 0;
+                    rowCount = 0;
                     for (int x = 0; x < pets.size(); x++) {
                         System.out.println("|  " + x + pets.get(x).toString());
                         rowCount++;
                     }
                     System.out.println("+----------------------+");
-                    System.out.println(rowCount + " rows in set.\n");
-                    break;
-                case 2:
+                    if (rowCount == 1) {
+                        System.out.println(rowCount + " row in set.\n");
+                    } else {
+                        System.out.println(rowCount + " rows in set.\n");
+                    }
+                }
+                case 2 -> {
                     // Add more pets here
                     System.out.println("\nAdd pets by typing name and age.\nType \"Done\" when done adding pets.\n");
                     int countPetsAdded = 0;
-
                     sc.nextLine(); // Used to catch empty line ****************
-                    while(true) {
+                    while (true) {
                         System.out.print("Add Pet (name, age): ");
                         String userInput = sc.nextLine().trim();
 
                         if (userInput.toLowerCase(Locale.ENGLISH).equals("done")) {
                             break;
-                        }
-                        else {
+                        } else {
                             String regexStringPetInfo = "(^[a-zA-Z]+)(\\s+)([0-9]+$)";
                             Pattern patternPetInfo = Pattern.compile(regexStringPetInfo);
                             Matcher matchPetInfo = patternPetInfo.matcher(userInput);
 
+                            // Method to get boolean result whether pattern matches the matcher
+                            // Necessary for .group method functionality
                             matchPetInfo.matches();
-                            matchPetInfo.groupCount();
-                            String name = matchPetInfo.group(1);
-                            String petAge = matchPetInfo.group(3);
-                            int age = Integer.parseInt(petAge);
+// NOT NEEDED???            matchPetInfo.groupCount();
 
-//                            int age;
-//                            try {
-//                                age = Integer.parseInt(matchPetInfo.group(1));
-//                            }
-//                            catch (NumberFormatException e) {
-//                                age = 0;
-//                            }
-
-                            Pet newPet = new Pet(name, age);
-                            pets.add(newPet);
-                            countPetsAdded++;
+                            try {
+                                String name = matchPetInfo.group(1);
+                                String petAge = matchPetInfo.group(3);
+                                int age = Integer.parseInt(petAge);
+                                Pet newPet = new Pet(name, age);
+                                pets.add(newPet);
+                                countPetsAdded++;
+                            } catch (IllegalStateException e) {
+                                System.out.println("Invalid data entered...\n");
+                                // USED FOR DEBUGGING: System.out.println("DEBUG: " + e);
+                            }
                         }
                     }
                     System.out.println(countPetsAdded + " pets added.\n");
-                    break;
-                case 7:
+                }
+                case 5 -> {
+                    // Search pets by name here
+                    System.out.print("\nEnter a name to search: ");
+                    sc.nextLine(); // Used to catch empty line ****************
+                    String nameSearch = sc.nextLine().toLowerCase();
+                    rowCount = 0;
+                    System.out.println("\n+----------------------+\n" +
+                            "| ID | NAME      | AGE |\n" +
+                            "+----------------------+");
+                    for (int x = 0; x < pets.size(); x++) {
+                        if (pets.get(x).name.toLowerCase().contains(nameSearch)) {
+                            System.out.println("|  " + x + pets.get(x).toString());
+                            rowCount++;
+                        }
+                    }
+                    System.out.println("+----------------------+");
+                    if (rowCount == 1) {
+                        System.out.println(rowCount + " row in set.\n");
+                    } else {
+                        System.out.println(rowCount + " rows in set.\n");
+                    }
+                }
+                case 6 -> {
+                    // Search pets by age here
+                    System.out.print("\nEnter an age to search: ");
+                    sc.nextLine(); // Used to catch empty line ****************
+                    int ageSearch = Integer.parseInt(sc.nextLine());
+                    rowCount = 0;
+                    System.out.println("\n+----------------------+\n" +
+                            "| ID | NAME      | AGE |\n" +
+                            "+----------------------+");
+                    for (int x = 0; x < pets.size(); x++) {
+                        if (pets.get(x).age.equals(ageSearch)) {
+                            System.out.println("|  " + x + pets.get(x).toString());
+                            rowCount++;
+                        }
+                    }
+                    System.out.println("+----------------------+");
+                    if (rowCount == 1) {
+                        System.out.println(rowCount + " row in set.\n");
+                    } else {
+                        System.out.println(rowCount + " rows in set.\n");
+                    }
+                }
+                case 7 -> {
                     // Exit program here
                     System.out.println("\nGoodbye!");
                     System.exit(0);
-                default:
-                    // Display error message for invalid selection here
-                    System.out.println("\nError! Invalid menu option selected...\n");
-                    break;
-
+                }
+                default -> System.out.println("\nError! Invalid menu option selected...\n");
             }
         }
     }
@@ -105,6 +147,10 @@ public class Main {
         System.out.println("What would you like to do?");
         System.out.println("\t1) View all pets");
         System.out.println("\t2) Add more pets");
+// COMMENT OUT UNTIL READY FOR RELEASE        System.out.println("\t3) Update an existing pet");
+// COMMENT OUT UNTIL READY FOR RELEASE        System.out.println("\t4) Remove an existing pet");
+        System.out.println("\t5) Search pets by name");
+        System.out.println("\t6) Search pets by age");
         System.out.println("\t7) Exit program");
         System.out.print("Your choice: ");
     }
@@ -114,6 +160,7 @@ public class Main {
 
 // Create Pet class
 class Pet {
+    int ID;
     String name;
     Integer age;
 
@@ -121,6 +168,7 @@ class Pet {
     Pet(String name, Integer age) {
         setName(name);
         setAge(age);
+        int count = 0;
     }
 
     // Get method returns name variable value
