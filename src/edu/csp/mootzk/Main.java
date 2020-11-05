@@ -4,7 +4,7 @@
 // Professor: Gregory Silver
 // Date: 11/5/2020
 // Version: 5.0
-// Updates: Program handles errors now
+// Updates: Program handles errors now.
 
 package edu.csp.mootzk;
 
