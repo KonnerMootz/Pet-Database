@@ -1,5 +1,17 @@
 Pet Database Assignment
 
+Author: Konner Mootz
+Class: CSC 422
+Professor: Gregory Silver
+
+
+Assignment Info:
+
+This assignment will give you practice of using version control such as git to manage changes of your code and to give you experience of incremental development.
+Create a basic database program for managing information (name and age) about pets.  The database allows the user to add pet information to the database, remove pet information, updating pet information, and searching for pets by name or by age.  You can assume the user only input pet names consisting of a single word.
+You will build this program incrementally.  For each increment, you will create a release that the user can download and run.  You will use git and GitHub to track the changes and to create releases.  You must use appropriate design and make use of Object-Oriented Design.  See milestones.
+
+
 Issues experienced during development:
 
 * Scanner skipping user input

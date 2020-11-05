@@ -2,9 +2,9 @@
 // Assignment 2 Part 2
 // Class: CSC 422 Software Engineering
 // Professor: Gregory Silver
-// Date: 11/4/2020
-// Version: 4.0
-// Updates: Save and load pet data from text file
+// Date: 11/5/2020
+// Version: 5.0
+// Updates: Program handles errors now
 
 package edu.csp.mootzk;
 
@@ -16,7 +16,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Main {
-
     public static void main(String[] args) {
         System.out.println("Pet Database Program\n");
 
@@ -45,15 +44,12 @@ public class Main {
 
             switch (userSelection) {
                 case 1 -> {
-                 // View all pets here
+                    // View all pets here
                     pets = fm.readDatabaseFile(petDatabaseFile);
-                    // DEBUG: System.out.println(pets);
                     fm.displayDatabase(pets);
-                 // displayAllPets(pets);
                 }
                 case 2 -> {
                     pets = fm.readDatabaseFile(petDatabaseFile);
-                    // DEBUG: System.out.println(pets);
 
                     if (pets.size() >= 5) {
                         // If five pets already in database, print error message
@@ -86,16 +82,22 @@ public class Main {
                                     // Necessary for .group method functionality
                                     boolean matches = matchPetInfo.matches();
 
-                                    if(matches) {
+                                    if (matches) {
                                         String name = matchPetInfo.group(1);
                                         String petAge = matchPetInfo.group(3);
                                         int age = Integer.parseInt(petAge);
-                                        Pet newPet = new Pet(name, age);
-                                        pets.add(newPet);
-                                        countPetsAdded++;
+
+                                        if (age <= 0 || age > 20) {
+                                            System.out.println("Error: " + age + " is not a valid age.\n");
+                                        }
+                                        else {
+                                            Pet newPet = new Pet(name, age);
+                                            pets.add(newPet);
+                                            countPetsAdded++;
+                                        }
                                     }
                                     else {
-                                        System.out.println("Invalid data entered...\n");
+                                        System.out.println("Error: " + userInput + " is not a valid input\n");
                                     }
                                 }
                             }
@@ -114,40 +116,51 @@ public class Main {
 
                     System.out.print("Enter the pet ID you want to update: ");
                     sc.nextLine(); // Used to catch empty line
-                    int updatePetID = Integer.parseInt(sc.nextLine());
-                    System.out.print("\nEnter new name and new age: ");
-                    String updatedPetInfo = sc.nextLine().trim();
-                    String currentPetInfo = pets.get(updatePetID).toString();
-                    String regexStringPetInfo = "(^[a-zA-Z]+)(\\s+)([0-9]+$)";
-                    Pattern patternPetInfo = Pattern.compile(regexStringPetInfo);
-                    Matcher matchPetInfo = patternPetInfo.matcher(updatedPetInfo);
-                    boolean matches = matchPetInfo.matches();
+                    int petID = Integer.parseInt(sc.nextLine());
 
-                    if (matches) {
-                        String name = matchPetInfo.group(1);
-                        String petAge = matchPetInfo.group(3);
-                        int age = Integer.parseInt(petAge);
-                        pets.get(updatePetID).setName(name);
-                        pets.get(updatePetID).setAge(age);
-                        fm.addToDatabase(petDatabase, pets);
-                        System.out.println(currentPetInfo + " changed to " + pets.get(updatePetID).toString() + ".\n");
+                    if (petID < 0 || petID > pets.size() - 1) {
+                        System.out.println("Error: ID " + petID + " does not exist.\n");
                     }
                     else {
-                        System.out.println("Invalid data entered...\n");
-                        // USED FOR DEBUGGING: System.out.println("DEBUG: " + e);
+                        System.out.print("\nEnter new name and new age: ");
+                        String updatedPetInfo = sc.nextLine().trim();
+                        String currentPetInfo = pets.get(petID).toString();
+                        String regexStringPetInfo = "(^[a-zA-Z]+)(\\s+)([0-9]+$)";
+                        Pattern patternPetInfo = Pattern.compile(regexStringPetInfo);
+                        Matcher matchPetInfo = patternPetInfo.matcher(updatedPetInfo);
+                        boolean matches = matchPetInfo.matches();
+
+                        if (matches) {
+                            String name = matchPetInfo.group(1);
+                            String petAge = matchPetInfo.group(3);
+                            int age = Integer.parseInt(petAge);
+                            pets.get(petID).setName(name);
+                            pets.get(petID).setAge(age);
+                            fm.addToDatabase(petDatabase, pets);
+                            System.out.println(currentPetInfo + " changed to " + pets.get(petID).toString() + ".\n");
+                        }
+                        else {
+                            System.out.println("Invalid data entered...\n");
+                        }
                     }
                 }
                 case 4 -> {
                     // Remove an existing pet here
-//                    displayAllPets(pets);
+                    fm.displayDatabase(pets);
                     System.out.print("Enter the pet ID to remove: ");
                     sc.nextLine(); // Used to catch empty line
                     int petID = Integer.parseInt(sc.nextLine());
-                    String petName = pets.get(petID).getName();
-                    int petAge = pets.get(petID).getAge();
-                    pets.remove(petID);
-                    fm.addToDatabase(petDatabase, pets);
-                    System.out.println(petName + " " + petAge + " is removed.\n");
+
+                    if (petID < 0 || petID > pets.size() - 1){
+                        System.out.println("Error: ID " + petID + " does not exist.\n");
+                    }
+                    else {
+                        String petName = pets.get(petID).getName();
+                        int petAge = pets.get(petID).getAge();
+                        pets.remove(petID);
+                        fm.addToDatabase(petDatabase, pets);
+                        System.out.println(petName + " " + petAge + " is removed.\n");
+                    }
                 }
                 case 5 -> {
                     // Search pets by name here
@@ -185,7 +198,8 @@ public class Main {
                     }
                     if (rowCount == 1) {
                         System.out.println(rowCount + " row in set.\n");
-                    } else {
+                    }
+                    else {
                         System.out.println(rowCount + " rows in set.\n");
                     }
                 }
@@ -195,8 +209,6 @@ public class Main {
                     sc.close(); // Close scanner
                     System.exit(0);
                 }
-                default -> // Display error for invalid menu selection
-                        System.out.println("\nError! Invalid menu option selected...\n");
             } // End of switch(userSelection)
         } // End of while(true) loop
     } // End of static void main
@@ -252,11 +264,10 @@ class Pet {
 }
 
 class FileManagement {
-    String fileName;
-    String fileData;
 
     public File createDatabaseFile(String petDatabase) {
         File petDatabaseFile = new File(petDatabase);
+
         try {
             boolean newFile = petDatabaseFile.createNewFile();
 
@@ -347,13 +358,5 @@ class FileManagement {
         catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public String toString() {
-        return "File{" +
-                "fileName='" + fileName + '\'' +
-                ", fileData='" + fileData + '\'' +
-                '}';
     }
 }
