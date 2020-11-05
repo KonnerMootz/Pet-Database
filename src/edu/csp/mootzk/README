@@ -51,3 +51,4 @@ Issues experienced during development:
     * Ex: Searching for "dog" does not return "doggy"
     * Cause: Was using .equals() comparison
     * Resolution: Use .contains() instead
+
